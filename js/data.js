@@ -2110,3 +2110,320 @@ var STUDY_CHEATSHEETS = window.STUDY_CHEATSHEETS = [
     badge: 'Verified Solutions',
   },
 ];
+
+// ============================================================
+// STACKLY SALEM — Credential Store & Persistence Helpers
+// ============================================================
+
+var DEFAULT_REGISTERED_USERS = [
+  {
+    id: 'user-std-1',
+    name: 'Ananya Sharma',
+    email: 'student@stackly.edu',
+    password: 'student123',
+    role: 'student',
+    targetExam: 'GRE General Test',
+    avatar: './assets/images/img-1534528741775-53.webp',
+    streakDays: 14,
+    xpPoints: 3420,
+    completedMocks: 6,
+    predictedScore: '326 / 340 (96th %ile)',
+  },
+  {
+    id: 'user-std-2',
+    name: 'Ananya Sharma',
+    email: 'ananya@stackly.edu',
+    password: 'password123',
+    role: 'student',
+    targetExam: 'GRE General Test',
+    avatar: './assets/images/img-1534528741775-53.webp',
+    streakDays: 14,
+    xpPoints: 3420,
+    completedMocks: 6,
+    predictedScore: '326 / 340 (96th %ile)',
+  },
+  {
+    id: 'user-std-3',
+    name: 'Candidate Aspirant',
+    email: 'student@aspirant.edu',
+    password: 'demo',
+    role: 'student',
+    targetExam: 'TNPSC Group 1, 2 & 4',
+    avatar: './assets/images/img-1534528741775-53.webp',
+    streakDays: 12,
+    xpPoints: 2350,
+    completedMocks: 4,
+    predictedScore: '324 / 340 (94th %ile)',
+  },
+  {
+    id: 'user-adm-1',
+    name: 'Dr. K. Arunkumar',
+    email: 'admin@stackly.edu',
+    password: 'admin123',
+    role: 'admin',
+    targetExam: 'Academic Directorate, Salem HQ',
+    avatar: './assets/images/img-1507003211169-0a.webp',
+    streakDays: 45,
+    xpPoints: 8900,
+    completedMocks: 62,
+    predictedScore: 'Platform Administrator',
+    department: 'Academic Directorate, Salem HQ',
+    managedStudents: 148500,
+  },
+  {
+    id: 'user-adm-2',
+    name: 'Academic Directorate',
+    email: 'admin@stackly.in',
+    password: 'demo',
+    role: 'admin',
+    targetExam: 'Salem HQ Academic Operations Director',
+    avatar: './assets/images/img-1507003211169-0a.webp',
+    streakDays: 45,
+    xpPoints: 8900,
+    completedMocks: 62,
+    predictedScore: 'Platform Administrator',
+    department: 'Academic Directorate, Salem HQ',
+    managedStudents: 148500,
+  },
+];
+
+function getRegisteredUsers() {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const stored = localStorage.getItem('stackly_registered_users');
+      if (stored) {
+        return JSON.parse(stored);
+      }
+      localStorage.setItem('stackly_registered_users', JSON.stringify(DEFAULT_REGISTERED_USERS));
+    }
+  } catch (e) {
+    console.warn('LocalStorage unavailable for registered users', e);
+  }
+  return DEFAULT_REGISTERED_USERS;
+}
+
+function registerNewUser(userData) {
+  const users = getRegisteredUsers();
+  const normalizedEmail = (userData.email || '').trim().toLowerCase();
+  const existing = users.find(u => u.email.toLowerCase() === normalizedEmail);
+  if (existing) {
+    return { success: false, error: 'An account with this email address already exists.' };
+  }
+
+  // Strictly enforce student role on self-registration
+  const newUser = {
+    id: `user-${Date.now()}`,
+    name: userData.name || normalizedEmail.split('@')[0],
+    email: normalizedEmail,
+    password: userData.password,
+    role: 'student',
+    targetExam: userData.targetExam || 'TNPSC Group 1, 2 & 4',
+    avatar: './assets/images/img-1534528741775-53.webp',
+    streakDays: 1,
+    xpPoints: 100,
+    completedMocks: 0,
+    predictedScore: 'Calibrating Diagnostic...',
+  };
+
+  users.push(newUser);
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('stackly_registered_users', JSON.stringify(users));
+    }
+  } catch (e) {
+    console.warn('Failed to persist registered user', e);
+  }
+
+  return { success: true, user: newUser };
+}
+
+function validateUserLogin(email, password, role) {
+  const users = getRegisteredUsers();
+  const normalizedEmail = (email || '').trim().toLowerCase();
+  const found = users.find(u => u.email.toLowerCase() === normalizedEmail);
+
+  if (!found) {
+    return {
+      success: false,
+      error: 'Unrecognized email address. Please check your credentials or register a new candidate account.',
+    };
+  }
+
+  if (found.password !== password) {
+    return {
+      success: false,
+      error: 'Incorrect password. Please re-enter your password.',
+    };
+  }
+
+  if (role && found.role !== role) {
+    if (role === 'admin' && found.role !== 'admin') {
+      return {
+        success: false,
+        error: 'Access Restricted: This account does not possess Salem HQ Administrator privileges.',
+      };
+    }
+    if (role === 'student' && found.role !== 'student') {
+      return {
+        success: false,
+        error: 'This is an Administrator account. Please select "Admin Console" to sign in.',
+      };
+    }
+  }
+
+  return { success: true, user: found };
+}
+
+// ── Enrolled Courses Store ──
+function getEnrolledCourses() {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const stored = localStorage.getItem('stackly_enrolled_courses');
+      if (stored) {
+        return JSON.parse(stored);
+      }
+      const initial = (window.STUDENT_DASHBOARD_DATA && window.STUDENT_DASHBOARD_DATA.activeEnrollments) || [];
+      localStorage.setItem('stackly_enrolled_courses', JSON.stringify(initial));
+      return initial;
+    }
+  } catch (e) {
+    console.warn('LocalStorage unavailable for enrolled courses', e);
+  }
+  return (window.STUDENT_DASHBOARD_DATA && window.STUDENT_DASHBOARD_DATA.activeEnrollments) || [];
+}
+
+function addEnrolledCourse(course) {
+  const current = getEnrolledCourses();
+  const exists = current.find(c => c.id === course.id || c.title === course.title);
+  if (exists) {
+    return { success: true, alreadyEnrolled: true, course: exists };
+  }
+
+  const newEnrollment = {
+    id: course.id || `course-${Date.now()}`,
+    title: course.title,
+    category: course.category || 'Exam Mastery',
+    progress: 0,
+    completedHours: 0,
+    totalHours: parseInt(course.durationHours) || 48,
+    nextLesson: 'Module 1: Foundational Diagnostic & Orientation',
+    lastActive: 'Just Now',
+    bannerImg: course.image || './assets/images/img-1434030216411-0b.webp',
+    instructor: course.instructor ? course.instructor.name : 'Stackly Academic Faculty',
+    targetExam: course.targetExam || course.title,
+  };
+
+  const updated = [newEnrollment, ...current];
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('stackly_enrolled_courses', JSON.stringify(updated));
+    }
+  } catch (e) {
+    console.warn('Failed to persist enrolled course', e);
+  }
+  return { success: true, alreadyEnrolled: false, course: newEnrollment };
+}
+
+// ── Student Notifications Store ──
+var DEFAULT_NOTIFICATIONS = [
+  {
+    id: 'notif-1',
+    studentId: 'STU-9402',
+    studentName: 'Ananya Sharma',
+    title: 'Adaptive IRT Recalibration Complete',
+    message: 'Your Quantitative score trajectory has improved to 96th percentile. Next recommended target: Advanced Combinatorics & Probability.',
+    date: 'August 12, 2026',
+    type: 'Academic Progress',
+    read: false,
+    author: 'Dr. K. Arunkumar (Academic Director)',
+  },
+  {
+    id: 'notif-2',
+    studentId: 'all',
+    studentName: 'All Candidates',
+    title: 'National Live Mock CBT Simulation This Saturday',
+    message: 'Salem Central Server will host the National Scholarship Exam at 10:00 AM IST. Ensure your webcam and dual proctor stream are calibrated.',
+    date: 'August 10, 2026',
+    type: 'Schedule Change',
+    read: true,
+    author: 'Salem HQ Examination Cell',
+  },
+];
+
+function getStudentNotifications() {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const stored = localStorage.getItem('stackly_student_notifications');
+      if (stored) {
+        return JSON.parse(stored);
+      }
+      localStorage.setItem('stackly_student_notifications', JSON.stringify(DEFAULT_NOTIFICATIONS));
+    }
+  } catch (e) {
+    console.warn('LocalStorage unavailable for notifications', e);
+  }
+  return DEFAULT_NOTIFICATIONS;
+}
+
+function addStudentNotification(notif) {
+  const current = getStudentNotifications();
+  const newNotif = {
+    id: `notif-${Date.now()}`,
+    studentId: notif.studentId || 'all',
+    studentName: notif.studentName || 'All Students',
+    title: notif.title || 'Directorate Notice',
+    message: notif.message,
+    date: notif.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    type: notif.type || 'Faculty Note',
+    read: false,
+    author: notif.author || 'Dr. K. Arunkumar (Academic Director)',
+  };
+  const updated = [newNotif, ...current];
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('stackly_student_notifications', JSON.stringify(updated));
+    }
+  } catch (e) {
+    console.warn('Failed to save notification', e);
+  }
+  return newNotif;
+}
+
+// ── IRT Engine Sync Store ──
+function getIRTSyncStatus() {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const stored = localStorage.getItem('stackly_irt_sync');
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    }
+  } catch (e) {}
+  return {
+    lastSynced: '2 minutes ago',
+    timestamp: Date.now(),
+    nodeLatency: '14ms',
+    itemsCalibrated: 12450,
+    status: 'Optimal Synchronized',
+  };
+}
+
+function setIRTSyncStatus(statusData) {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('stackly_irt_sync', JSON.stringify(statusData));
+    }
+  } catch (e) {}
+}
+
+// Global attachments
+window.DEFAULT_REGISTERED_USERS = DEFAULT_REGISTERED_USERS;
+window.getRegisteredUsers = getRegisteredUsers;
+window.registerNewUser = registerNewUser;
+window.validateUserLogin = validateUserLogin;
+window.getEnrolledCourses = getEnrolledCourses;
+window.addEnrolledCourse = addEnrolledCourse;
+window.getStudentNotifications = getStudentNotifications;
+window.addStudentNotification = addStudentNotification;
+window.getIRTSyncStatus = getIRTSyncStatus;
+window.setIRTSyncStatus = setIRTSyncStatus;

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="royal">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proctored Services & CBT Testing Lab | Academic Infrastructure — Stackly</title>
+  <meta name="description" content="Premier exam preparation and learning platform by Stackly Technologies, Salem. Featuring adaptive mock tests, student &amp; admin dashboards, expert courses, and real-time cognitive analytics." />
+  <meta property="og:title" content="Stackly — Online Exam Preparation &amp; Learning Platform" />
+  <meta property="og:description" content="Premier exam preparation and learning platform by Stackly Technologies, Salem. Featuring adaptive mock tests, student &amp; admin dashboards, expert courses, and real-time cognitive analytics." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
+            display: ['"Outfit"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          },
+          aspectRatio: {
+            '4/3': '4 / 3',
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Lucide Icons Progressive Enhancement CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Core Theme & Layout Styles -->
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+</head>
+
+<body class="min-h-screen flex flex-col antialiased font-sans selection:bg-indigo-200 selection:text-indigo-950 bg-slate-50 text-slate-800">
+
+  <!-- Scroll Progress Bar -->
+  <div id="scroll-progress-bar" style="position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#4f46e5,#06b6d4,#10b981);transform-origin:left;transform:scaleX(0);z-index:99999;pointer-events:none;"></div>
+
+  <!-- 3D Preloader Screen (Active during smooth navigation) -->
+  <div id="preloader" class="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-slate-950/95 backdrop-blur-md text-white select-none px-4 hidden">
+    <div class="absolute inset-0 pointer-events-none overflow-hidden">
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-600/15 rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="relative z-10 flex flex-col items-center max-w-sm w-full text-center">
+      <!-- Animated Spinner with Center Emblem -->
+      <div class="relative w-20 h-20 flex items-center justify-center mb-6">
+        <div class="absolute inset-0 rounded-full border-2 border-slate-800"></div>
+        <div class="absolute inset-0 rounded-full border-2 border-transparent border-t-indigo-500 border-r-indigo-400 animate-spin"></div>
+        <div class="absolute inset-1 rounded-full bg-indigo-500/10 animate-pulse"></div>
+        <div class="relative z-10 w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-md p-2">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="398 82 212 290" fill="currentColor" class="w-5 h-5 text-white">
+            <path fill="currentColor" opacity="1.000000" stroke="none" d=" M419.713867,256.179962   C408.001251,235.739304 410.215973,215.613876 419.889709,195.679504   C426.373138,182.319229 436.255493,171.444672 446.508270,160.904480   C457.075165,150.041229 468.783997,140.348602 478.792694,128.896606   C487.411407,119.035004 494.797852,108.464394 500.031921,96.425682   C500.738983,94.799370 501.001617,92.854477 502.785980,91.712807   C503.214905,91.838028 503.879059,91.821617 504.103485,92.127670   C514.526489,106.341171 522.003967,121.483376 518.287415,139.859406   C515.933533,151.498276 508.987885,160.308563 500.296600,167.942245   C487.788574,178.928223 473.634369,187.949692 462.046570,200.037262   C456.219025,206.116135 451.191589,212.659836 449.149933,221.054688   C445.376373,236.570572 454.272034,249.198563 470.197021,250.779221   C485.241028,252.272446 499.302216,248.880798 512.632202,241.996979   C514.021362,241.279602 515.213196,239.793518 517.062500,240.547546   C517.833252,242.063324 516.690857,242.794266 515.917847,243.562866   C502.480865,256.923462 487.519073,267.973206 468.591339,271.949402   C447.923096,276.291199 431.269562,272.383606 419.713867,256.179962  z"/>
+            <path fill="currentColor" opacity="1.000000" stroke="none" d=" M536.351807,311.352905   C521.089722,325.623138 508.631836,341.451172 501.644409,361.304535   C500.580017,360.856842 499.799347,360.777496 499.458496,360.348633   C491.323975,350.113098 485.458466,338.909088 484.707672,325.531189   C484.034546,313.536499 489.236786,303.909576 496.947052,295.363251   C506.737030,284.511749 519.089050,276.702271 530.329102,267.573334   C539.676453,259.981689 548.930542,252.352356 553.649658,240.719803   C556.247925,234.315125 556.803040,227.722214 555.167542,221.122284   C551.964783,208.197189 539.399353,200.886032 526.174622,203.877502   C513.911682,206.651428 503.242737,212.702515 493.079834,219.823700   C492.039246,220.552856 491.267578,221.851700 489.661957,221.557190   C488.659760,220.289383 489.653076,219.345703 490.287292,218.480408   C503.850159,199.976334 521.506714,187.674316 544.321167,183.636948   C574.742554,178.253418 599.437622,199.883118 594.804749,234.346802   C592.539368,251.198425 583.628967,264.794067 572.581299,277.156372   C561.558105,289.491241 548.610413,299.803345 536.351807,311.352905  z"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Tag & Title -->
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-xs text-slate-300 mb-2.5">
+        <svg class="w-3.5 h-3.5 text-indigo-400 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/></svg>
+        <span class="font-medium" id="preloader-tag">Loading Stackly</span>
+      </div>
+
+      <h3 class="text-base sm:text-lg font-bold text-white tracking-tight" id="preloader-title">Welcome to Stackly Salem</h3>
+      <p class="text-xs text-slate-400 mt-1" id="preloader-sub">Preparing modules and proctored testing engines...</p>
+
+      <!-- Minimal Progress Bar -->
+      <div class="w-full mt-6">
+        <div class="flex items-center justify-between text-xs text-slate-400 mb-1.5 font-mono">
+          <span>Loading</span>
+          <span class="text-indigo-400 font-bold" id="preloader-percent">0%</span>
+        </div>
+        <div class="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+          <div id="preloader-progress-bar" class="h-full bg-indigo-500 rounded-full transition-all duration-75" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- Skip Button -->
+      <button id="preloader-skip" class="mt-6 text-[11px] text-slate-500 hover:text-slate-300 underline underline-offset-4 cursor-pointer transition">
+        Skip loading
+      </button>
+    </div>
+  </div>
+
+  <!-- Top Announcement Banner Notice (Hidden on mobile view) -->
+  <div class="border-b border-indigo-200/60 bg-indigo-50/90 px-4 py-2 text-xs text-indigo-950 hidden sm:flex flex-wrap items-center justify-between gap-3 shadow-2xs">
+    <div class="flex items-center gap-2">
+      <svg class="w-3.5 h-3.5 text-indigo-600 shrink-0 animate-pulse" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+      <span>
+        <strong>Stackly Salem 2026:</strong> 99th Percentile Prep &amp; Adaptive Test Simulations Calibrated at Salem HQ.
+      </span>
+      <button
+        onclick="openExam('Stackly Salem Diagnostic Mock')"
+        class="underline font-bold text-indigo-700 hover:text-indigo-900 ml-1 cursor-pointer"
+      >
+        Start Diagnostic Mock &rarr;
+      </button>
+    </div>
+
+    <div class="flex items-center gap-4 text-[11px] text-slate-600">
+      <span class="hidden sm:flex items-center gap-1.5 font-medium">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        Salem HQ CBT Labs Open
+      </span>
+      <span class="flex items-center gap-1 font-semibold text-slate-700">
+        <svg class="w-3 h-3 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        +91 98420 54321
+      </span>
+    </div>
+  </div>
+
+  <!-- Navigation Bar Container (Top fixed on scroll) -->
+  <div id="main-navbar" class="sticky top-0 z-40 w-full"></div>
+
+  <!-- Main Multi-Page Route Containers -->
+  <main class="flex-1">
+    <div id="page-home" class="page-section"></div>
+    <div id="page-about" class="page-section"></div>
+    <div id="page-services" class="page-section active"></div>
+    <div id="page-courses" class="page-section"></div>
+    <div id="page-blog" class="page-section"></div>
+    <div id="page-contact" class="page-section"></div>
+    <div id="page-student-dashboard" class="page-section"></div>
+    <div id="page-admin-dashboard" class="page-section"></div>
+    <div id="page-not-found" class="page-section"></div>
+  </main>
+
+  <!-- Global Footer Container -->
+  <div id="main-footer"></div>
+
+  <!-- Authentication Modal Backdrop & Container -->
+  <div id="auth-modal-backdrop" class="modal-backdrop hidden"></div>
+
+  <!-- Interactive Mock Exam Simulation Engine Modal Backdrop -->
+  <div id="exam-modal-backdrop" class="modal-backdrop hidden"></div>
+
+  <!-- Course Curriculum & Syllabus Inspector Modal Backdrop -->
+  <div id="syllabus-modal-backdrop" class="modal-backdrop hidden"></div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Application Scripts Loaded in Strict Dependency Order -->
+  <!-- 1. Data Store -->
+  <script src="js/data.js"></script>
+
+  <!-- 2. Core Application Router & State Bus -->
+  <script src="js/app.js"></script>
+
+  <!-- 3. Global UI Components -->
+  <script src="js/components/navbar.js"></script>
+  <script src="js/components/footer.js"></script>
+  <script src="js/components/auth-modal.js"></script>
+  <script src="js/components/syllabus-modal.js"></script>
+  <script src="js/components/exam-modal.js"></script>
+
+  <!-- 4. SPA Page Views -->
+  <script src="js/pages/home.js"></script>
+  <script src="js/pages/about.js"></script>
+  <script src="js/pages/services.js"></script>
+  <script src="js/pages/courses.js"></script>
+  <script src="js/pages/blog.js"></script>
+  <script src="js/pages/contact.js"></script>
+  <script src="js/pages/student-dashboard.js"></script>
+  <script src="js/pages/admin-dashboard.js"></script>
+  <script src="js/pages/not-found.js"></script>
+
+</body>
+</html>

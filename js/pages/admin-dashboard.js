@@ -56,6 +56,276 @@ const AdminDashboardModule = {
     this.render();
   },
 
+  // ── BUG-010: Inspect Live Video Proctoring Modal ──
+  inspectLiveFeed(sessionId, studentName, exam) {
+    const existing = document.getElementById('live-proctor-modal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'live-proctor-modal';
+    modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md animate-fadeIn';
+    modal.innerHTML = `
+      <div class="bg-slate-900 text-white rounded-2xl shadow-2xl max-w-4xl w-full overflow-hidden border border-slate-800 flex flex-col" style="max-height: 90vh;">
+        <!-- Header -->
+        <div class="px-6 py-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-bold uppercase tracking-wider">
+              <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span> LIVE PROCTOR FEED
+            </span>
+            <div>
+              <h3 class="text-sm font-bold text-white">${studentName} <span class="text-xs text-slate-400 font-mono">(${sessionId})</span></h3>
+              <div class="text-xs text-slate-400">${exam} • Salem CBT Examination Terminal 08</div>
+            </div>
+          </div>
+          <button onclick="document.getElementById('live-proctor-modal').remove()" class="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+
+        <!-- Video Grids -->
+        <div class="p-6 overflow-y-auto space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Primary Web Camera with AI bounding box -->
+            <div class="relative bg-black rounded-xl overflow-hidden aspect-4/3 border border-slate-700 flex items-center justify-center">
+              <img src="./assets/images/img-1534528741775-53.webp" alt="${studentName}" class="w-full h-full object-cover">
+              
+              <!-- AI Facial tracking box -->
+              <div class="absolute inset-12 border-2 border-emerald-400/80 rounded-lg pointer-events-none flex flex-col justify-between p-1.5">
+                <span class="text-[9px] bg-emerald-500 text-black font-mono font-bold px-1 rounded self-start">FACE CONFIRMED (99.4%)</span>
+                <span class="text-[9px] bg-black/80 text-emerald-400 font-mono px-1 rounded self-end">GAZE: ON-SCREEN</span>
+              </div>
+
+              <div class="absolute bottom-2 left-2 bg-black/80 px-2 py-1 rounded text-[10px] font-mono text-white flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Camera 1: Primary Facial Angle</span>
+              </div>
+            </div>
+
+            <!-- Secondary Room / Screen Mirror -->
+            <div class="relative bg-slate-950 rounded-xl overflow-hidden aspect-4/3 border border-slate-700 p-4 flex flex-col justify-between">
+              <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono">
+                <span>Display Mirror: Terminal 08</span>
+                <span class="text-emerald-400">Lockdown Browser Active</span>
+              </div>
+
+              <div class="p-4 bg-slate-900/90 rounded-lg border border-slate-800 text-xs font-mono space-y-1 text-slate-300">
+                <div class="text-indigo-400 font-bold">Active Question: 18 of 40</div>
+                <div>Section: Quantitative Problem Solving</div>
+                <div>Remaining Time: 42m 18s</div>
+                <div>Full-Screen Violations: 0</div>
+                <div>External Monitors: None Detected</div>
+              </div>
+
+              <div class="flex items-center justify-between text-[10px] font-mono text-slate-400">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+                  <span>Audio Waveform: Normal (24 dB Ambient)</span>
+                </div>
+                <span class="text-emerald-400 font-bold">STABLE</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Telemetry & Proctor Diagnostics -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700">
+              <div class="text-slate-400 text-[11px]">Multiple Faces</div>
+              <div class="text-base font-bold text-emerald-400 mt-0.5">0 (None)</div>
+              <div class="text-[10px] text-slate-400">Single candidate verified</div>
+            </div>
+            <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700">
+              <div class="text-slate-400 text-[11px]">Audio Anomaly</div>
+              <div class="text-base font-bold text-emerald-400 mt-0.5">Clean</div>
+              <div class="text-[10px] text-slate-400">No background speech</div>
+            </div>
+            <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700">
+              <div class="text-slate-400 text-[11px]">Tab Blur Count</div>
+              <div class="text-base font-bold text-emerald-400 mt-0.5">0 Events</div>
+              <div class="text-[10px] text-slate-400">Continuous focus</div>
+            </div>
+            <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700">
+              <div class="text-slate-400 text-[11px]">Biometric Score</div>
+              <div class="text-base font-bold text-indigo-400 mt-0.5">99.8 / 100</div>
+              <div class="text-[10px] text-emerald-400">Integrity High</div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-800">
+            <div class="flex items-center gap-2">
+              <button onclick="showToast('Audio warning chime transmitted to ${studentName}.')" class="px-3 py-1.5 bg-amber-600/90 hover:bg-amber-600 text-white rounded-xl text-xs font-semibold transition cursor-pointer">
+                Issue Audio Warning
+              </button>
+              <button onclick="showToast('360 degree environment scan requested on candidate device.')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold transition cursor-pointer">
+                Request Room Scan
+              </button>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="AdminDashboardModule.pauseSession('${sessionId}'); document.getElementById('live-proctor-modal').remove()" class="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold transition cursor-pointer">
+                Pause Session
+              </button>
+              <button onclick="document.getElementById('live-proctor-modal').remove()" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition cursor-pointer">
+                Close Monitor
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+  },
+
+  // ── BUG-011: Export Cohort Data (.csv download) ──
+  exportCohortData() {
+    const data = window.ADMIN_DASHBOARD_DATA;
+    const roster = (data && data.studentRoster) || [];
+
+    const headers = ['Student ID', 'Full Name', 'Email Address', 'Target Exam', 'Enrolled Course', 'Diagnostic Score', 'Mocks Completed', 'Registered Date', 'Status'];
+    const rows = roster.map(s => [
+      `"${s.id}"`,
+      `"${s.name}"`,
+      `"${s.email}"`,
+      `"${s.exam}"`,
+      `"${s.enrolledCourse}"`,
+      `"${s.diagnosticScore}"`,
+      s.mocksTaken,
+      `"${s.registeredDate}"`,
+      `"${s.status}"`
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Stackly_Salem_Cohort_Export_${new Date().getFullYear()}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    showToast(`Exported ${roster.length} candidate records to Stackly_Salem_Cohort_Export_${new Date().getFullYear()}.csv.`);
+  },
+
+  // ── BUG-012: Send Notice Compose Modal & Persistence ──
+  sendNoticeModal(studentId, studentName) {
+    const existing = document.getElementById('send-notice-modal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'send-notice-modal';
+    modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-fadeIn';
+    modal.innerHTML = `
+      <div class="w-full max-w-md bg-white rounded-2xl p-6 shadow-2xl border border-slate-200 text-slate-800">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 font-display">Dispatch Official Academic Notice</h3>
+            <p class="text-xs text-slate-500">Recipient: <strong class="text-slate-800">${studentName}</strong> (${studentId})</p>
+          </div>
+          <button onclick="document.getElementById('send-notice-modal').remove()" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+
+        <form onsubmit="AdminDashboardModule.dispatchNotice(event, '${studentId}', '${studentName.replace(/'/g, "\\'")}')" class="space-y-4 mt-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Notice Classification</label>
+            <select id="notice-type" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+              <option value="Academic Progress">Academic Progress &amp; IRT Trajectory</option>
+              <option value="Schedule Change">Mandatory Proctored Mock Schedule</option>
+              <option value="Performance Alert">Priority Topic Drill Alert</option>
+              <option value="Direct Faculty Note">Direct Faculty Strategy Note</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Notice Title</label>
+            <input type="text" id="notice-title" required value="Adaptive IRT Diagnostic Update &amp; Recommended Next Steps"
+              class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Directive Message Body</label>
+            <textarea id="notice-body" required rows="3" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 leading-relaxed">Your recent mock assessment shows mastery in core algebra and arithmetic. We recommend completing 20 targeted drills in Advanced Combinatorics before the Saturday national mock test.</textarea>
+          </div>
+
+          <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+            <button type="button" onclick="document.getElementById('send-notice-modal').remove()"
+              class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition cursor-pointer">
+              Cancel
+            </button>
+            <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center gap-1.5 shadow-xs">
+              <span>Send Notice</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+  },
+
+  dispatchNotice(e, studentId, studentName) {
+    e.preventDefault();
+    const type = document.getElementById('notice-type')?.value || 'Academic Progress';
+    const title = document.getElementById('notice-title')?.value || 'Directorate Notice';
+    const message = document.getElementById('notice-body')?.value || '';
+
+    if (typeof addStudentNotification === 'function') {
+      addStudentNotification({
+        studentId,
+        studentName,
+        title,
+        message,
+        type,
+        author: 'Dr. K. Arunkumar (Academic Director)',
+      });
+    }
+
+    const modal = document.getElementById('send-notice-modal');
+    if (modal) modal.remove();
+
+    showToast(`Notice successfully dispatched to ${studentName} and archived in academic records.`);
+  },
+
+  // ── BUG-013: Sync IRT Psychometric Engine ──
+  syncIRTEngine() {
+    const btn = document.getElementById('irt-sync-btn');
+    const icon = document.getElementById('irt-sync-icon');
+    if (icon) icon.classList.add('animate-spin');
+
+    setTimeout(() => {
+      if (icon) icon.classList.remove('animate-spin');
+
+      const nowStr = 'Just now';
+      const syncData = {
+        lastSynced: nowStr,
+        timestamp: Date.now(),
+        nodeLatency: '11ms',
+        itemsCalibrated: 25400,
+        status: 'Optimal Synchronized',
+      };
+
+      if (typeof setIRTSyncStatus === 'function') {
+        setIRTSyncStatus(syncData);
+      }
+
+      // Re-calibrate question items in state
+      this.questionList = this.questionList.map(q => ({
+        ...q,
+        status: 'Active Calibrated (Sync)',
+      }));
+
+      const clusterLabel = document.getElementById('cluster-sync-label');
+      if (clusterLabel) {
+        clusterLabel.textContent = `Salem Core Cluster: 99.98% Live • IRT Synced (${nowStr})`;
+      }
+
+      showToast('IRT Psychometric Engine synchronized across all Salem cluster nodes. Latency: 11ms.');
+      this.render();
+    }, 600);
+  },
+
   addQuestion(e) {
     e.preventDefault();
     if (!this.newQuestionTopic.trim()) return;
@@ -96,6 +366,8 @@ const AdminDashboardModule = {
     };
     const kpis = data.kpis;
 
+    const irtStatus = typeof getIRTSyncStatus === 'function' ? getIRTSyncStatus() : { lastSynced: '2m ago' };
+
     const filteredSessions = this.liveSessions.filter(s =>
       this.selectedExamFilter === 'All' || s.exam.includes(this.selectedExamFilter)
     );
@@ -107,10 +379,10 @@ const AdminDashboardModule = {
     );
 
     const tabs = [
-      { id: 'proctor', label: 'Live Proctored Sessions', count: this.liveSessions.length },
-      { id: 'qbank', label: 'Question Bank & IRT Calibration', count: this.questionList.length },
-      { id: 'students', label: 'Candidate Roster & Analytics', count: (data.studentRoster || []).length },
-      { id: 'cluster', label: 'Salem HQ Infrastructure Nodes', count: (data.systemNodes || []).length },
+      { id: 'proctor', label: 'Live Proctored Simulations', count: this.liveSessions.length },
+      { id: 'qbank', label: 'Item Response Bank', count: this.questionList.length },
+      { id: 'students', label: 'Student Cohort Diagnostics', count: (data.studentRoster || []).length },
+      { id: 'cluster', label: 'Infrastructure & Nodes', count: (data.systemNodes || []).length },
     ];
 
     let tabContentHTML = '';
@@ -120,20 +392,18 @@ const AdminDashboardModule = {
         <div class="space-y-6">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h2 class="text-lg font-bold text-slate-900 font-display">Active Timed Exam Monitoring</h2>
-              <p class="text-xs text-slate-500">Real-time candidate telemetry with automated browser lockdown and AI gaze analysis.</p>
+              <h2 class="text-lg font-bold text-slate-900 font-display">Active Monitored Test Sessions</h2>
+              <p class="text-xs text-slate-500">Live dual-camera and audio proctoring streams connected to Salem CBT Server.</p>
             </div>
 
-            <div class="flex items-center gap-2">
-              <span class="text-xs text-slate-500">Filter:</span>
-              <select onchange="AdminDashboardModule.setExamFilter(this.value)"
-                class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
-                <option value="All" ${this.selectedExamFilter === 'All' ? 'selected' : ''}>All Examinations</option>
-                <option value="GRE" ${this.selectedExamFilter === 'GRE' ? 'selected' : ''}>GRE General</option>
-                <option value="SAT" ${this.selectedExamFilter === 'SAT' ? 'selected' : ''}>Digital SAT</option>
-                <option value="GATE" ${this.selectedExamFilter === 'GATE' ? 'selected' : ''}>GATE CS</option>
-                <option value="MCAT" ${this.selectedExamFilter === 'MCAT' ? 'selected' : ''}>MCAT Medical</option>
-              </select>
+            <!-- Filter Pills -->
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+              ${['All', 'GRE', 'GMAT', 'MCAT', 'SAT'].map(filter => `
+                <button onclick="AdminDashboardModule.setExamFilter('${filter}')"
+                  class="px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${this.selectedExamFilter === filter ? 'bg-indigo-600 text-white font-bold' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}">
+                  ${filter}
+                </button>
+              `).join('')}
             </div>
           </div>
 
@@ -142,31 +412,30 @@ const AdminDashboardModule = {
               <table class="w-full text-left text-xs">
                 <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-semibold">
                   <tr>
-                    <th class="py-3.5 px-4">Session &amp; Candidate</th>
-                    <th class="py-3.5 px-4">Exam &amp; Track</th>
-                    <th class="py-3.5 px-4">Section &amp; Progress</th>
-                    <th class="py-3.5 px-4">Time Spent</th>
-                    <th class="py-3.5 px-4">Anti-Cheat Feed</th>
-                    <th class="py-3.5 px-4 text-right">Proctor Actions</th>
+                    <th class="py-3.5 px-4">Candidate / ID</th>
+                    <th class="py-3.5 px-4">Exam / Center</th>
+                    <th class="py-3.5 px-4">Time Remaining</th>
+                    <th class="py-3.5 px-4">AI Biometric Status</th>
+                    <th class="py-3.5 px-4 text-right">Proctor Interventions</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                   ${filteredSessions.map(session => `
                     <tr class="hover:bg-slate-50/80 transition">
                       <td class="py-3.5 px-4">
-                        <div class="font-bold text-slate-900">${session.studentName}</div>
-                        <div class="text-[11px] text-slate-400 font-mono">${session.sessionId} • ${session.ipLocation}</div>
+                        <div class="flex items-center gap-3">
+                          <img src="${session.avatar}" alt="${session.studentName}"
+                            class="w-9 h-9 rounded-xl object-cover ring-1 ring-slate-200 shrink-0">
+                          <div>
+                            <div class="font-bold text-slate-900">${session.studentName}</div>
+                            <div class="text-[11px] text-slate-500 font-mono">${session.sessionId}</div>
+                          </div>
+                        </div>
                       </td>
 
                       <td class="py-3.5 px-4">
-                        <span class="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 font-bold border border-indigo-200 text-[11px]">
-                          ${session.exam}
-                        </span>
-                      </td>
-
-                      <td class="py-3.5 px-4">
-                        <div class="font-medium text-slate-800">${session.currentSection}</div>
-                        <div class="text-[11px] text-slate-500">${session.questionsDone} items completed</div>
+                        <div class="font-semibold text-slate-800">${session.exam}</div>
+                        <div class="text-[11px] text-slate-500">${session.center}</div>
                       </td>
 
                       <td class="py-3.5 px-4 text-slate-700 font-mono">
@@ -181,7 +450,7 @@ const AdminDashboardModule = {
 
                       <td class="py-3.5 px-4 text-right">
                         <div class="flex items-center justify-end gap-1.5">
-                          <button onclick="showToast('Opening live webcam &amp; audio feed for ${session.studentName}...')"
+                          <button onclick="AdminDashboardModule.inspectLiveFeed('${session.sessionId}', '${session.studentName.replace(/'/g, "\\'")}', '${session.exam.replace(/'/g, "\\'")}')"
                             class="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded-lg transition cursor-pointer" title="Inspect Live Video">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                           </button>
@@ -270,9 +539,10 @@ const AdminDashboardModule = {
               <h2 class="text-lg font-bold text-slate-900 font-display">Student Roster &amp; Diagnostic Standings</h2>
               <p class="text-xs text-slate-500">Track candidate progression from initial baseline to final target score.</p>
             </div>
-            <button onclick="showToast('Exporting student roster to encrypted CSV for Salem academic audits...')"
-              class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold rounded-xl transition cursor-pointer">
-              Export Cohort Data
+            <button onclick="AdminDashboardModule.exportCohortData()"
+              class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold rounded-xl transition cursor-pointer flex items-center gap-1.5 shadow-xs">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Export Cohort Data (CSV)</span>
             </button>
           </div>
 
@@ -299,9 +569,10 @@ const AdminDashboardModule = {
 
                 <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
                   <span class="text-xs font-semibold text-indigo-600">${stu.status}</span>
-                  <button onclick="showToast('Sent personalized academic progress notice to ${stu.name}.')"
-                    class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition cursor-pointer">
-                    Send Notice
+                  <button onclick="AdminDashboardModule.sendNoticeModal('${stu.id}', '${stu.name.replace(/'/g, "\\'")}')"
+                    class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition cursor-pointer flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    <span>Send Notice</span>
                   </button>
                 </div>
               </div>
@@ -377,12 +648,13 @@ const AdminDashboardModule = {
               <div class="flex items-center gap-3">
                 <div class="flex items-center gap-2 px-3.5 py-2 bg-emerald-50 border border-emerald-200 rounded-xl text-xs font-semibold text-emerald-800">
                   <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  <span>Salem Core Cluster: 99.98% Live</span>
+                  <span id="cluster-sync-label">Salem Core Cluster: 99.98% Live • IRT: ${irtStatus.status || 'Synced'} (${irtStatus.lastSynced})</span>
                 </div>
 
-                <button onclick="showToast('Syncing all global IRT engine nodes with Salem Central...')"
-                  class="p-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-700 transition cursor-pointer" title="Refresh Metrics">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+                <button id="irt-sync-btn" onclick="AdminDashboardModule.syncIRTEngine()"
+                  class="p-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-700 transition cursor-pointer flex items-center gap-1.5" title="Recalibrate &amp; Sync IRT Engine">
+                  <svg id="irt-sync-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+                  <span class="text-xs font-semibold hidden md:inline">Sync IRT</span>
                 </button>
 
                 <button onclick="navigate('student-dashboard')"
@@ -393,8 +665,8 @@ const AdminDashboardModule = {
 
                 <button onclick="AdminDashboardModule.showAddModal = true; AdminDashboardModule.render()"
                   class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-xs transition flex items-center gap-2 cursor-pointer">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                  <span>Add Test Item</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  <span>New Psychometric Item</span>
                 </button>
               </div>
             </div>

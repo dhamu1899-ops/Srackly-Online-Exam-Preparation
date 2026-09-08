@@ -65,21 +65,27 @@ function renderAuthModal() {
 
         <!-- Role Selector -->
         <div class="mb-3">
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Access Role</label>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-semibold text-slate-700">Access Role</label>
+            ${tab === 'signup' ? '<span class="text-[10px] text-amber-700 font-semibold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Candidate Registration Only</span>' : ''}
+          </div>
           <div class="grid grid-cols-2 gap-2">
             <button type="button" id="auth-role-student" onclick="switchAuthRole('student')"
               class="py-1.5 px-3 rounded-xl text-xs font-semibold border transition text-center ${role === 'student' ? 'bg-indigo-50 border-indigo-400 text-indigo-800 shadow-xs' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'}">
               Student Portal
             </button>
-            <button type="button" id="auth-role-admin" onclick="switchAuthRole('admin')"
-              class="py-1.5 px-3 rounded-xl text-xs font-semibold border transition text-center ${role === 'admin' ? 'bg-indigo-50 border-indigo-400 text-indigo-800 shadow-xs' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'}">
-              Admin Console
+            <button type="button" id="auth-role-admin" ${tab === 'signup' ? 'disabled title="Admin accounts cannot be self-registered. Provisioned exclusively by Salem HQ Academic Directorate."' : 'onclick="switchAuthRole(\'admin\')'}
+              class="py-1.5 px-3 rounded-xl text-xs font-semibold border transition text-center ${tab === 'signup' ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-60' : (role === 'admin' ? 'bg-indigo-50 border-indigo-400 text-indigo-800 shadow-xs' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100')}">
+              Admin Console ${tab === 'signup' ? '<span class="text-[10px] block text-slate-400 font-normal">(Restricted)</span>' : ''}
             </button>
           </div>
         </div>
 
         <!-- Error Msg -->
-        <div id="auth-error" class="mb-3 p-2 text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-xl hidden"></div>
+        <div id="auth-error" class="mb-3 p-2.5 text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-xl hidden flex items-start gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span id="auth-error-text"></span>
+        </div>
 
         <!-- Form -->
         <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-3">
@@ -116,7 +122,7 @@ function renderAuthModal() {
             <label class="block text-xs font-semibold text-slate-700 mb-1">Email Address</label>
             <div class="relative">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute" style="left:12px;top:50%;transform:translateY(-50%);"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-              <input type="email" id="auth-email" placeholder="${isAdmin ? 'admin@stackly.in' : 'student@aspirant.edu'}"
+              <input type="email" id="auth-email" placeholder="${isAdmin ? 'admin@stackly.edu' : 'student@stackly.edu'}"
                 value="${defaultEmail}" required
                 class="w-full bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" style="padding:8px 12px 8px 36px;">
             </div>
@@ -125,7 +131,7 @@ function renderAuthModal() {
           <div>
             <div class="flex items-center justify-between mb-1">
               <label class="block text-xs font-semibold text-slate-700">Password</label>
-              ${tab === 'signin' ? '<span class="text-[11px] text-slate-400">Default test pwd: demo</span>' : ''}
+              ${tab === 'signin' ? '<span class="text-[11px] text-slate-400">Demo test pwd: <strong>student123</strong> / <strong>admin123</strong> / <strong>demo</strong></span>' : ''}
             </div>
             <div class="relative">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute" style="left:12px;top:50%;transform:translateY(-50%);"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -135,7 +141,7 @@ function renderAuthModal() {
           </div>
 
           <button type="submit" id="auth-submit" class="w-full py-2.5 px-4 mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl transition shadow-md shadow-indigo-600/20 flex items-center justify-center gap-2 cursor-pointer">
-            <span id="auth-submit-text">${tab === 'signin' ? `Sign In as ${role === 'admin' ? 'Admin' : 'Student'}` : `Register as ${role === 'admin' ? 'Admin' : 'Student'}`}</span>
+            <span id="auth-submit-text">${tab === 'signin' ? `Sign In as ${role === 'admin' ? 'Admin' : 'Student'}` : 'Register as Student'}</span>
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
         </form>
@@ -161,14 +167,19 @@ function renderAuthModal() {
 // Tab and role switchers
 window.switchAuthTab = function(newTab) {
   AppState.authTab = newTab;
+  if (newTab === 'signup') {
+    AppState.authInitialRole = 'student';
+  }
   renderAuthModal();
 };
 
 window.switchAuthRole = function(newRole) {
+  if (AppState.authTab === 'signup' && newRole === 'admin') {
+    return;
+  }
   AppState.authInitialRole = newRole;
   renderAuthModal();
 };
-
 
 window.handleAuthSubmit = function(e) {
   e.preventDefault();
@@ -176,39 +187,76 @@ window.handleAuthSubmit = function(e) {
   const passwordEl = document.getElementById('auth-password');
   const nameEl     = document.getElementById('auth-name');
   const errEl      = document.getElementById('auth-error');
+  const errText    = document.getElementById('auth-error-text');
   const submitBtn  = document.getElementById('auth-submit');
-  const tab        = document.getElementById('auth-tab-signup')?.classList.contains('bg-white') ? 'signup' : 'signin';
+  const tab        = AppState.authTab || 'signin';
 
   const email    = emailEl?.value?.trim() || '';
   const password = passwordEl?.value?.trim() || '';
   const name     = nameEl?.value?.trim() || '';
-  const role     = AppState.authInitialRole;
+  const role     = tab === 'signup' ? 'student' : (AppState.authInitialRole || 'student');
 
-  errEl.classList.add('hidden');
-  if (!email || !password) { errEl.textContent = 'Please enter both email and password.'; errEl.classList.remove('hidden'); return; }
-  if (tab === 'signup' && !name) { errEl.textContent = 'Please enter your full name.'; errEl.classList.remove('hidden'); return; }
+  function showError(msg) {
+    if (errText) errText.textContent = msg;
+    else if (errEl) errEl.textContent = msg;
+    if (errEl) errEl.classList.remove('hidden');
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = `<span>${tab === 'signin' ? `Sign In as ${role === 'admin' ? 'Admin' : 'Student'}` : 'Register as Student'}</span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`;
+    }
+  }
 
-  if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<div style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.8s linear infinite;"></div>'; }
+  if (errEl) errEl.classList.add('hidden');
+
+  if (!email || !password) {
+    showError('Please enter both email and password.');
+    return;
+  }
+
+  if (tab === 'signup') {
+    if (!name) {
+      showError('Please enter your full name.');
+      return;
+    }
+    if (role === 'admin') {
+      showError('Administrative accounts cannot be self-registered. Please contact Salem HQ Academic Directorate.');
+      return;
+    }
+  }
+
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<div style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.8s linear infinite;"></div>';
+  }
 
   setTimeout(() => {
-    const user = {
-      id: `user-${Date.now()}`,
-      name: name || (email.includes('@') ? email.split('@')[0] : 'User'),
-      email,
-      role,
-      targetExam: role === 'admin' ? 'Salem HQ Academic Operations Director' : (document.getElementById('auth-exam')?.value || 'TNPSC Group 1 & 2'),
-      avatar: role === 'admin'
-        ? './assets/images/img-1507003211169-0a.webp'
-        : './assets/images/img-1534528741775-53.webp',
-      streakDays: role === 'admin' ? 45 : 12,
-      xpPoints:   role === 'admin' ? 8900 : 2350,
-      completedMocks: role === 'admin' ? 62 : 4,
-      predictedScore: role === 'admin' ? 'Platform Administrator' : '324 / 340 (94th %ile)',
-      department: role === 'admin' ? 'Academic Directorate, Salem HQ' : undefined,
-      managedStudents: role === 'admin' ? 148500 : undefined,
-    };
-    handleLoginSuccess(user);
-  }, 400);
+    if (tab === 'signin') {
+      // Validate credentials against registered store
+      const validation = typeof validateUserLogin === 'function'
+        ? validateUserLogin(email, password, role)
+        : { success: true, user: { id: `user-${Date.now()}`, name: email.split('@')[0], email, role } };
+
+      if (!validation.success) {
+        showError(validation.error);
+        return;
+      }
+
+      handleLoginSuccess(validation.user);
+    } else {
+      // Registration: Enforce student role and persist user
+      const targetExam = document.getElementById('auth-exam')?.value || 'TNPSC Group 1, 2 & 4';
+      const regResult = typeof registerNewUser === 'function'
+        ? registerNewUser({ name, email, password, targetExam })
+        : { success: true, user: { id: `user-${Date.now()}`, name, email, password, role: 'student', targetExam } };
+
+      if (!regResult.success) {
+        showError(regResult.error);
+        return;
+      }
+
+      handleLoginSuccess(regResult.user);
+    }
+  }, 350);
 };
 
 window.renderAuthModal = renderAuthModal;

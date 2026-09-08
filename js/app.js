@@ -180,6 +180,11 @@ function navigate(route, options = {}) {
   }
 
   const targetEl = document.getElementById(`page-${route}`);
+  if (!targetEl && typeof window !== 'undefined' && window.location) {
+    const targetFile = route === 'home' ? 'index.html' : `${route}.html`;
+    window.location.href = targetFile;
+    return;
+  }
   const hasContent = targetEl && targetEl.children.length > 0;
 
   // If already on this route, has content, and force is not requested, smooth scroll to top
@@ -284,6 +289,13 @@ function closeAuthModal() {
 
 function handleLoginSuccess(userData) {
   AppState.user = userData;
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('stackly_auth_user', JSON.stringify(userData));
+    }
+  } catch (e) {
+    console.warn('Failed to save session to localStorage', e);
+  }
   closeAuthModal();
 
   const destination = AppState.pendingRoute;
@@ -314,6 +326,13 @@ function handleLoginSuccess(userData) {
 
 function handleLogout() {
   AppState.user = null;
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('stackly_auth_user');
+    }
+  } catch (e) {
+    console.warn('Failed to clear session from localStorage', e);
+  }
   closeUserDropdown();
   renderNavbar();
   navigate('home', { skipAuth: true, skipPreloader: false });
@@ -362,7 +381,29 @@ function closeSyllabusModal() {
 
 function handleEnroll(course) {
   closeSyllabusModal();
-  showToast(`Enrolled in "${course.title}"! Added to your Stackly Salem dashboard.`);
+  
+  if (typeof addEnrolledCourse === 'function') {
+    const res = addEnrolledCourse(course);
+    if (res.alreadyEnrolled) {
+      showToast(`You are already enrolled in "${course.title}". Opening your curriculum dashboard...`);
+    } else {
+      showToast(`Successfully enrolled in "${course.title}"! Added to your Stackly Salem dashboard.`);
+    }
+  } else {
+    showToast(`Enrolled in "${course.title}"! Added to your Stackly Salem dashboard.`);
+  }
+
+  // Trigger real-time dashboard refresh if rendered
+  if (typeof window.render_student_dashboard === 'function') {
+    window.render_student_dashboard();
+  }
+
+  if (AppState.user) {
+    navigate('student-dashboard', { skipAuth: true });
+  } else {
+    AppState.pendingRoute = 'student-dashboard';
+    openLogin('student', `Please sign in to access your newly enrolled curriculum: "${course.title}".`);
+  }
 }
 
 // ── Navbar helpers ──
@@ -457,11 +498,22 @@ function fmtNum(n) {
   return n.toString();
 }
 
-// ── Hash-based routing on load & history support ──
+// ── Hash-based routing on load, file path support & history support ──
 function initRouter() {
-  const hash = window.location.hash.replace('#', '') || 'home';
   const validRoutes = Object.keys(ROUTE_LABELS);
-  const startRoute = validRoutes.includes(hash) ? hash : 'home';
+  let pageFromPath = '';
+  if (typeof window !== 'undefined' && window.location && window.location.pathname) {
+    const pathPart = window.location.pathname.split('/').pop() || '';
+    const cleanName = pathPart.replace('.html', '').replace('.htm', '');
+    if (cleanName && validRoutes.includes(cleanName)) {
+      pageFromPath = cleanName;
+    } else if (cleanName === 'index' || cleanName === '') {
+      pageFromPath = 'home';
+    }
+  }
+
+  const hash = (typeof window !== 'undefined' && window.location && window.location.hash.replace('#', '')) || '';
+  const startRoute = (hash && validRoutes.includes(hash)) ? hash : (pageFromPath || 'home');
 
   // Listen for browser Back & Forward navigation
   window.addEventListener('popstate', () => {
@@ -508,6 +560,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // Restore theme from localStorage
   const savedTheme = localStorage.getItem('stackly-theme') || 'royal';
   setTheme(savedTheme);
+
+  // Restore user session from localStorage (BUG-003 fix)
+  try {
+    const storedUser = localStorage.getItem('stackly_auth_user');
+    if (storedUser) {
+      AppState.user = JSON.parse(storedUser);
+    }
+  } catch (e) {
+    console.warn('Could not restore auth user session', e);
+  }
 
   // Render static components
   if (typeof renderNavbar === 'function') renderNavbar();
